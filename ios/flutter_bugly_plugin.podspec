@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Bugly Flutter plugin.
                        DESC
+  s.static_framework = true
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
@@ -15,7 +16,7 @@ Bugly Flutter plugin.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-
+  s.dependency 'Bugly'
   s.ios.deployment_target = '8.0'
 end
 

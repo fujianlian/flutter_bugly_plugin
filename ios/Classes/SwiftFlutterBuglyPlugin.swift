@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import Bugly
 
 public class SwiftFlutterBuglyPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -9,6 +10,20 @@ public class SwiftFlutterBuglyPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+     if(call.method == "setUp"){
+        let arguments = call.arguments as! NSDictionary
+        let appID = arguments["app_id"] as! String
+        Bugly.start(withAppId: appID)
+        result(0)
+    } else if(call.method == "postException"){
+        let arguments = call.arguments as! NSDictionary
+        let message = arguments["crash_message"] as! String
+        let detail = arguments["crash_detail"] as! NSString
+        let stack = detail.components(separatedBy: "\n")
+        Bugly.reportException(withCategory: 4, name:message, reason: stack[0], callStack: stack,extraInfo: [:], terminateApp: false)
+        result(0)
+    } else {
+        result(FlutterMethodNotImplemented)
+    }
   }
 }

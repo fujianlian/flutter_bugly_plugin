@@ -56,8 +56,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     if(Platform.isAndroid){
       FlutterBuglyPlugin.setUp('a4ef71648a');
-    }else if(Platform.isIOS){
-      FlutterBuglyPlugin.setUp('088aebe0d5');
+    } else if(Platform.isIOS){
+      FlutterBuglyPlugin.setUp('57b8f45872');
     }
     super.initState();
   }
