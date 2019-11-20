@@ -10,4 +10,12 @@ class FlutterBuglyPlugin {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
+
+  static void setUp(appID) {
+    _channel.invokeMethod("setUp",{'app_id':appID});
+  }
+
+  static void postException(error, stack) {
+    _channel.invokeMethod("postException",{'crash_message':error.toString(),'crash_detail':stack.toString()});
+  }
 }
