@@ -9,9 +9,16 @@ dependencies:
   flutter:
     sdk: flutter
       
+  /// swift版本
   flutter_bugly_plugin:
     git:
       url: https://github.com/fujianlian/flutter_bugly_plugin.git
+      ref: master
+  /// oc版本
+  flutter_bugly_plugin:
+      git:
+        url: https://github.com/fujianlian/flutter_bugly_plugin.git
+        ref: dev
 ```
 
 ## Android 
@@ -45,7 +52,7 @@ Bugly SDK 需要支持 NDK，因此我们需要在 App 的 build.gradle 文件�
 defaultConfig {
     ndk {
         // 设置支持的SO库架构
-        abiFilters 'armeabi-v7a'
+        abiFilters 'armeabi-v7a', 'arm64-v8a'
     }
 }
 ```
