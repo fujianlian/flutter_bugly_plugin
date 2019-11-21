@@ -9,6 +9,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="flutter_bugly_plugin_example"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

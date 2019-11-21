@@ -1,54 +1,112 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_bugly_plugin/flutter_bugly_plugin.dart';
+import 'dart:io';
 
-void main() => runApp(MyApp());
+bool get isInDebugMode {
+  bool inDebugMode = false;
+  assert(inDebugMode = true);
+  return inDebugMode;
+}
+
+/// Reports [error] along with its [stackTrace] to Bugly.
+Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
+  print('Caught error: $error');
+
+  print('Reporting to Bugly...');
+
+  FlutterBuglyPlugin.postException(error, stackTrace);
+
+}
+
+Future<Null> main() async {
+  // This captures errors reported by the Flutter framework.
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    Zone.current.handleUncaughtError(details.exception, details.stack);
+  };
+
+  ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
+    print(flutterErrorDetails.toString());
+    return Scaffold(
+        body: Center(
+          child: Text("Custom Error Widget"),
+        )
+    );
+  };
+
+
+  runZoned<Future<Null>>(() async {
+    runApp(MyApp());
+  }, onError: (error, stackTrace) async {
+    await _reportError(error, stackTrace);
+  });
+}
 
 class MyApp extends StatefulWidget {
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<StatefulWidget> createState() => _MyAppState();
+// This widget is the root of your application.
+
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-
   @override
   void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterBuglyPlugin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+    if(Platform.isAndroid){
+      FlutterBuglyPlugin.setUp('a4ef71648a');
+    }else if(Platform.isIOS){
+      FlutterBuglyPlugin.setUp('088aebe0d5');
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Crashy'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Dart exception'),
+              elevation: 1.0,
+              onPressed: () {
+                throw StateError('This is a Dart exception.');
+              },
+            ),
+            new RaisedButton(
+              child: Text('async Dart exception'),
+              elevation: 1.0,
+              onPressed: () {
+                try {
+                  //Future.delayed(Duration(seconds: 1)).then((e) => Future.error("This is an async Dart exception."));
+                  Future.delayed(Duration(seconds: 1)).then((e) => throw StateError('This is a Dart exception in Future.'));
+                }
+                catch(e) {
+                  print("This line will never be executed. ");
+                }
+
+              },
+            ),
+          ],
         ),
       ),
     );
